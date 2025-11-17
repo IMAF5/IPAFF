@@ -12,7 +12,7 @@
                     <key>kind</key>
                     <string>software-package</string>
                     <key>url</key>
-                    <string>https://ghproxy.net/https://github.com/IMAF5/IPAFF/releases/download/Weiland.Chat_com.ufon.chats1_857600.ipa/Weiland.Chat_com.ufon.chats1_857600.ipa</string>
+                    <string>https://ghproxy.com/https://github.com/IMAF5/IPAFF/releases/download/Weiland.Chat_com.ufon.chats1_857600.ipa/Weiland.Chat_com.ufon.chats1_857600.ipa</string>
                 </dict>
                 
                 <!-- 显示图标 -->
@@ -21,6 +21,8 @@
                     <string>display-image</string>
                     <key>url</key>
                     <string>https://weiland.xuclp.com/public/uploads/all/4w7tsRHZ43YdoseEXkb8zKMGw3LpU43BHRWBVCsp.jpg</string>
+                    <key>needs-shine</key>
+                    <false/>
                 </dict>
                 
                 <!-- 全尺寸图标 -->
@@ -29,6 +31,8 @@
                     <string>full-size-image</string>
                     <key>url</key>
                     <string>https://weiland.xuclp.com/public/uploads/all/4w7tsRHZ43YdoseEXkb8zKMGw3LpU43BHRWBVCsp.jpg</string>
+                    <key>needs-shine</key>
+                    <false/>
                 </dict>
             </array>
             
@@ -45,6 +49,8 @@
                 <string>software</string>
                 <key>title</key>
                 <string>WeilandChat</string>
+                <key>subtitle</key>
+                <string>跨境电商即时通讯</string>
             </dict>
         </dict>
     </array>
