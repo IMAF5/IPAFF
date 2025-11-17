@@ -7,12 +7,12 @@
         <dict>
             <key>assets</key>
             <array>
-                <!-- IPA文件地址 - 使用jsDelivr CDN加速 -->
+                <!-- IPA文件地址 - 使用GitHub镜像加速 -->
                 <dict>
                     <key>kind</key>
                     <string>software-package</string>
                     <key>url</key>
-                    <string>https://cdn.jsdelivr.net/gh/IMAF5/IPAFF@latest/Weiland.Chat_com.ufon.chats1_857600.ipa</string>
+                    <string>https://ghproxy.net/https://github.com/IMAF5/IPAFF/releases/download/Weiland.Chat_com.ufon.chats1_857600.ipa/Weiland.Chat_com.ufon.chats1_857600.ipa</string>
                 </dict>
                 
                 <!-- 显示图标 -->
@@ -39,12 +39,12 @@
                 <string>com.ufon.chats1</string>
                 <key>bundle-version</key>
                 <string>1.0.0</string>
+                <key>bundle-display-name</key>
+                <string>WeilandChat</string>
                 <key>kind</key>
                 <string>software</string>
                 <key>title</key>
                 <string>WeilandChat</string>
-                <key>subtitle</key>
-                <string>跨境电商即时通讯</string>
             </dict>
         </dict>
     </array>
