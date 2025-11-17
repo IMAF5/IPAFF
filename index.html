@@ -1519,49 +1519,58 @@
                 });
             }
             
-            setupIOSInstall() {
-                const iosBtn = document.getElementById('ios-download');
-                const iosModal = document.getElementById('ios-install-modal');
-                const iosInstallConfirm = document.getElementById('ios-install-confirm');
-                const iosInstallCancel = document.getElementById('ios-install-cancel');
-                
-                // 检测是否为iOS设备
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-                
-                iosBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    
-                    if (isIOS) {
-                        // 显示安装确认模态框
-                        iosModal.style.display = 'flex';
-                    } else {
-                        // 非iOS设备，显示提示
-                        const message = this.isEnglish ? 
-                            'This app is only available for iOS devices' : 
-                            '此应用仅适用于iOS设备';
-                        this.showNotification(message, 'info');
-                    }
-                });
-                
-                // 确认安装
-                iosInstallConfirm.addEventListener('click', () => {
-                    // 使用 itms-services 协议触发安装 - 使用CDN加速的manifest
-                    window.location.href = 'itms-services://?action=download-manifest&url=https://cdn.jsdelivr.net/gh/imaf5/IPAFF/manifest.plist';
-                    iosModal.style.display = 'none';
-                });
-                
-                // 取消安装
-                iosInstallCancel.addEventListener('click', () => {
-                    iosModal.style.display = 'none';
-                });
-                
-                // 点击模态框背景关闭
-                iosModal.addEventListener('click', (e) => {
-                    if (e.target === iosModal) {
-                        iosModal.style.display = 'none';
-                    }
-                });
-            }
+setupIOSInstall() {
+    const iosBtn = document.getElementById('ios-download');
+    const iosModal = document.getElementById('ios-install-modal');
+    const iosInstallConfirm = document.getElementById('ios-install-confirm');
+    const iosInstallCancel = document.getElementById('ios-install-cancel');
+    
+    // 检测是否为iOS设备
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    
+    iosBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        if (isIOS) {
+            // 显示安装确认模态框
+            iosModal.style.display = 'flex';
+        } else {
+            // 非iOS设备，显示提示
+            const message = this.isEnglish ? 
+                'This app is only available for iOS devices' : 
+                '此应用仅适用于iOS设备';
+            this.showNotification(message, 'info');
+        }
+    });
+    
+    // 确认安装
+    iosInstallConfirm.addEventListener('click', () => {
+        // 显示下载提示
+        const message = this.isEnglish ? 
+            'Starting download... If slow, please wait patiently.' : 
+            '开始下载... 如速度较慢请耐心等待。';
+        alert(message);
+        
+        // 延迟触发下载
+        setTimeout(() => {
+            window.location.href = 'itms-services://?action=download-manifest&url=https://imaf5.github.io/IPAFF/manifest.plist';
+        }, 500);
+        
+        iosModal.style.display = 'none';
+    });
+    
+    // 取消安装
+    iosInstallCancel.addEventListener('click', () => {
+        iosModal.style.display = 'none';
+    });
+    
+    // 点击模态框背景关闭
+    iosModal.addEventListener('click', (e) => {
+        if (e.target === iosModal) {
+            iosModal.style.display = 'none';
+        }
+    });
+}
             
             showNotification(message, type = 'info') {
                 // 在实际应用中可以实现更复杂的通知系统
