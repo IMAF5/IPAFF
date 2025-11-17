@@ -1551,9 +1551,14 @@
                         '开始下载... 如速度较慢请耐心等待。';
                     alert(message);
                     
+                    // 动态生成正确的 manifest.plist URL
+                    const manifestUrl = this.getManifestURL();
+                    
+                    console.log('安装链接:', 'itms-services://?action=download-manifest&url=' + encodeURIComponent(manifestUrl));
+                    
                     // 延迟触发下载
                     setTimeout(() => {
-                        window.location.href = 'itms-services://?action=download-manifest&url=https://imaf5.github.io/IPAFF/manifest.plist';
+                        window.location.href = 'itms-services://?action=download-manifest&url=' + encodeURIComponent(manifestUrl);
                     }, 500);
                     
                     iosModal.style.display = 'none';
@@ -1570,6 +1575,15 @@
                         iosModal.style.display = 'none';
                     }
                 });
+            }
+            
+            getManifestURL() {
+                // 自动生成当前域的 manifest.plist URL
+                const baseUrl = window.location.origin;
+                const path = window.location.pathname;
+                const manifestPath = path.replace(/[^/]*$/, '') + 'manifest.plist';
+                
+                return baseUrl + manifestPath;
             }
             
             showNotification(message, type = 'info') {
