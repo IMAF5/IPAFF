@@ -1545,8 +1545,8 @@
                 
                 // 确认安装
                 iosInstallConfirm.addEventListener('click', () => {
-                    // 使用 itms-services 协议触发安装
-                    window.location.href = 'itms-services://?action=download-manifest&url=https://imaf5.github.io/IPAFF/manifest.plist';
+                    // 使用 itms-services 协议触发安装 - 使用CDN加速的manifest
+                    window.location.href = 'itms-services://?action=download-manifest&url=https://cdn.jsdelivr.net/gh/imaf5/IPAFF/manifest.plist';
                     iosModal.style.display = 'none';
                 });
                 
