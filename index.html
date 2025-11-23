@@ -61,7 +61,7 @@
             height: 100%;
             z-index: -1;
             overflow: hidden;
-            isolation: isolate; /* 减少重绘 */
+            isolation: isolate;
         }
         
         .gradient-bg {
@@ -87,7 +87,7 @@
             border-radius: 50%;
             background: linear-gradient(135deg, rgba(0, 122, 255, 0.15) 0%, rgba(52, 199, 89, 0.15) 100%);
             animation: float 15s infinite ease-in-out;
-            will-change: transform, opacity; /* 性能优化 */
+            will-change: transform, opacity;
         }
         
         .shape:nth-child(1) {
@@ -160,7 +160,7 @@
             background-color: rgba(0, 122, 255, 0.4);
             border-radius: 50%;
             animation: pulse 3s infinite ease-in-out;
-            will-change: transform, opacity; /* 性能优化 */
+            will-change: transform, opacity;
         }
         
         .dot:nth-child(1) {
@@ -214,7 +214,7 @@
             transform: rotate(-45deg);
             animation: ribbonFloat 20s infinite linear;
             z-index: -1;
-            will-change: transform; /* 性能优化 */
+            will-change: transform;
         }
         
         .ribbon:nth-child(1) {
@@ -869,7 +869,7 @@
             background-color: white;
             border-radius: 12px;
             padding: 20px;
-            max-width: 300px;
+            max-width: 400px;
             width: 90%;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
@@ -878,10 +878,11 @@
         .ios-install-content h3 {
             margin-bottom: 15px;
             color: #1d1d1f;
+            font-size: 20px;
         }
         
         .ios-install-content p {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #86868b;
             line-height: 1.5;
         }
@@ -897,6 +898,11 @@
             cursor: pointer;
             width: 100%;
             margin-bottom: 10px;
+            transition: background-color 0.2s;
+        }
+        
+        .ios-install-btn:hover {
+            background-color: #0056CC;
         }
         
         .ios-install-cancel {
@@ -907,6 +913,32 @@
             font-size: 16px;
             cursor: pointer;
             width: 100%;
+        }
+        
+        /* 安装指南 */
+        .install-guide {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: left;
+        }
+        
+        .install-guide h4 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .install-guide ol {
+            margin-left: 20px;
+            color: #6c757d;
+        }
+        
+        .install-guide li {
+            margin-bottom: 8px;
+            line-height: 1.4;
         }
         
         /* 性能优化 - 减少动画偏好 */
@@ -1074,8 +1106,22 @@
     <div class="ios-install-modal" id="ios-install-modal">
         <div class="ios-install-content">
             <h3 data-lang="zh" data-key="ios-install-title">安装 WeilandChat</h3>
-            <p data-lang="zh" data-key="ios-install-text">点击"安装"按钮开始安装应用。安装完成后，您可以在主屏幕上找到应用图标。</p>
-            <button class="ios-install-btn" id="ios-install-confirm" data-lang="zh" data-key="install">安装</button>
+            <p data-lang="zh" data-key="ios-install-text">点击"立即安装"按钮开始自动安装应用。</p>
+            
+            <!-- 安装指南 -->
+            <div class="install-guide">
+                <h4>安装步骤：</h4>
+                <ol>
+                    <li>点击"立即安装"按钮</li>
+                    <li>系统会提示"是否要安装 WeilandChat"</li>
+                    <li>点击"安装"，返回桌面等待安装完成</li>
+                    <li>安装完成后，前往 <strong>设置 → 通用 → VPN与设备管理</strong></li>
+                    <li>找到企业级应用，点击"信任开发者"</li>
+                    <li>返回桌面即可打开应用</li>
+                </ol>
+            </div>
+            
+            <button class="ios-install-btn" id="ios-install-confirm" data-lang="zh" data-key="install">立即安装</button>
             <button class="ios-install-cancel" id="ios-install-cancel" data-lang="zh" data-key="cancel">取消</button>
         </div>
     </div>
@@ -1526,7 +1572,7 @@
                 const iosInstallCancel = document.getElementById('ios-install-cancel');
                 
                 // 检测是否为iOS设备
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                const isIOS = this.detectIOS();
                 
                 iosBtn.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -1545,23 +1591,7 @@
                 
                 // 确认安装
                 iosInstallConfirm.addEventListener('click', () => {
-                    // 显示下载提示
-                    const message = this.isEnglish ? 
-                        'Starting download... If slow, please wait patiently.' : 
-                        '开始下载... 如速度较慢请耐心等待。';
-                    alert(message);
-                    
-                    // 动态生成正确的 manifest.plist URL
-                    const manifestUrl = this.getManifestURL();
-                    
-                    console.log('安装链接:', 'itms-services://?action=download-manifest&url=' + encodeURIComponent(manifestUrl));
-                    
-                    // 延迟触发下载
-                    setTimeout(() => {
-                        window.location.href = 'itms-services://?action=download-manifest&url=' + encodeURIComponent(manifestUrl);
-                    }, 500);
-                    
-                    iosModal.style.display = 'none';
+                    this.startIOSInstall();
                 });
                 
                 // 取消安装
@@ -1577,11 +1607,69 @@
                 });
             }
             
+            detectIOS() {
+                const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+                const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+                return isIOS;
+            }
+            
+            startIOSInstall() {
+                const iosModal = document.getElementById('ios-install-modal');
+                
+                // 显示下载提示
+                const message = this.isEnglish ? 
+                    'Starting installation... Please wait.' : 
+                    '开始安装... 请稍候。';
+                this.showNotification(message, 'info');
+                
+                // 生成manifest.plist的URL
+                const manifestUrl = this.getManifestURL();
+                
+                // 创建安装链接
+                const installUrl = 'itms-services://?action=download-manifest&url=' + encodeURIComponent(manifestUrl);
+                
+                console.log('iOS安装链接:', installUrl);
+                
+                // 方法1: 直接跳转（推荐）
+                window.location.href = installUrl;
+                
+                // 方法2: 使用iframe作为备选方案
+                setTimeout(() => {
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = installUrl;
+                    document.body.appendChild(iframe);
+                    
+                    // 5秒后清理iframe
+                    setTimeout(() => {
+                        if (iframe.parentNode) {
+                            iframe.parentNode.removeChild(iframe);
+                        }
+                    }, 5000);
+                }, 1000);
+                
+                iosModal.style.display = 'none';
+                
+                // 如果10秒后页面还在，提示用户
+                setTimeout(() => {
+                    if (!document.hidden) {
+                        const retryMessage = this.isEnglish ?
+                            'If installation did not start, please try again or check your network connection.' :
+                            '如果安装没有开始，请重试或检查网络连接。';
+                        this.showNotification(retryMessage, 'warning');
+                    }
+                }, 10000);
+            }
+            
             getManifestURL() {
                 // 自动生成当前域的 manifest.plist URL
                 const baseUrl = window.location.origin;
                 const path = window.location.pathname;
-                const manifestPath = path.replace(/[^/]*$/, '') + 'manifest.plist';
+                
+                // 确保路径以/结尾
+                const manifestPath = path.endsWith('/') ? 
+                    path + 'manifest.plist' : 
+                    path.replace(/[^/]*$/, '') + 'manifest.plist';
                 
                 return baseUrl + manifestPath;
             }
@@ -1627,8 +1715,8 @@
                     'thank-you': '谢谢您的建议！',
                     'copyright': 'Weiland跨境电商有限公司 © 2018-2025 版权所有',
                     'ios-install-title': '安装 WeilandChat',
-                    'ios-install-text': '点击"安装"按钮开始安装应用。安装完成后，您可以在主屏幕上找到应用图标。',
-                    'install': '安装',
+                    'ios-install-text': '点击"立即安装"按钮开始自动安装应用。',
+                    'install': '立即安装',
                     'cancel': '取消'
                 },
                 en: {
@@ -1665,8 +1753,8 @@
                     'thank-you': 'Thank you for your feedback!',
                     'copyright': 'Weiland Cross-border E-commerce Co., Ltd. © 2018-2025 All Rights Reserved',
                     'ios-install-title': 'Install WeilandChat',
-                    'ios-install-text': 'Click the "Install" button to start installing the app. After installation, you can find the app icon on your home screen.',
-                    'install': 'Install',
+                    'ios-install-text': 'Click "Install Now" to start automatic app installation.',
+                    'install': 'Install Now',
                     'cancel': 'Cancel'
                 }
             };
