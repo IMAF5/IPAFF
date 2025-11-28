@@ -14,6 +14,11 @@
     <meta property="og:image" content="https://weiland.xuclp.com/public/uploads/all/4w7tsRHZ43YdoseEXkb8zKMGw3LpU43BHRWBVCsp.jpg">
     <meta property="og:type" content="website">
     
+    <!-- 禁用缓存和查看源码 -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -851,94 +856,22 @@
             color: white;
         }
         
-        /* iOS安装提示 */
-        .ios-install-modal {
+        /* 保护提示 */
+        .protection-message {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            z-index: 10000;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 100000;
             align-items: center;
             justify-content: center;
-        }
-        
-        .ios-install-content {
-            background-color: white;
-            border-radius: 12px;
-            padding: 20px;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-        
-        .ios-install-content h3 {
-            margin-bottom: 15px;
-            color: #1d1d1f;
-            font-size: 20px;
-        }
-        
-        .ios-install-content p {
-            margin-bottom: 15px;
-            color: #86868b;
-            line-height: 1.5;
-        }
-        
-        .ios-install-btn {
-            background-color: #007AFF;
             color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            margin-bottom: 10px;
-            transition: background-color 0.2s;
-        }
-        
-        .ios-install-btn:hover {
-            background-color: #0056CC;
-        }
-        
-        .ios-install-cancel {
-            background-color: transparent;
-            color: #007AFF;
-            border: none;
-            padding: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            width: 100%;
-        }
-        
-        /* 安装指南 */
-        .install-guide {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 15px 0;
-            text-align: left;
-        }
-        
-        .install-guide h4 {
-            color: #495057;
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-        
-        .install-guide ol {
-            margin-left: 20px;
-            color: #6c757d;
-        }
-        
-        .install-guide li {
-            margin-bottom: 8px;
-            line-height: 1.4;
+            font-size: 24px;
+            text-align: center;
+            flex-direction: column;
         }
         
         /* 性能优化 - 减少动画偏好 */
@@ -1102,28 +1035,11 @@
     <!-- 网络状态提示 -->
     <div class="network-status" id="network-status"></div>
     
-    <!-- iOS安装提示模态框 -->
-    <div class="ios-install-modal" id="ios-install-modal">
-        <div class="ios-install-content">
-            <h3 data-lang="zh" data-key="ios-install-title">安装 WeilandChat</h3>
-            <p data-lang="zh" data-key="ios-install-text">点击"立即安装"按钮开始自动安装应用。</p>
-            
-            <!-- 安装指南 -->
-            <div class="install-guide">
-                <h4>安装步骤：</h4>
-                <ol>
-                    <li>点击"立即安装"按钮</li>
-                    <li>系统会提示"是否要安装 WeilandChat"</li>
-                    <li>点击"安装"，返回桌面等待安装完成</li>
-                    <li>安装完成后，前往 <strong>设置 → 通用 → VPN与设备管理</strong></li>
-                    <li>找到企业级应用，点击"信任开发者"</li>
-                    <li>返回桌面即可打开应用</li>
-                </ol>
-            </div>
-            
-            <button class="ios-install-btn" id="ios-install-confirm" data-lang="zh" data-key="install">立即安装</button>
-            <button class="ios-install-cancel" id="ios-install-cancel" data-lang="zh" data-key="cancel">取消</button>
-        </div>
+    <!-- 保护提示 -->
+    <div class="protection-message" id="protection-message">
+        <i class="fas fa-shield-alt" style="font-size: 48px; margin-bottom: 20px;"></i>
+        <h2>页面保护已启用</h2>
+        <p style="font-size: 16px; margin-top: 10px;">请关闭开发者工具以正常浏览页面</p>
     </div>
     
     <!-- 动态背景 -->
@@ -1190,7 +1106,7 @@
                     <i class="fab fa-android" aria-hidden="true"></i>
                     <span data-lang="zh" data-key="android">Android</span>
                 </a>
-                <a href="#" class="download-btn ios-btn" id="ios-download">
+                <a href="https://d7.mifenfa.cn/j2qekv" class="download-btn ios-btn" target="_blank" id="ios-download">
                     <i class="fab fa-apple" aria-hidden="true"></i>
                     <span data-lang="zh" data-key="iphone">iPhone</span>
                 </a>
@@ -1349,6 +1265,81 @@
     </footer>
 
     <script>
+        // 源码保护功能
+        class PageProtection {
+            constructor() {
+                this.init();
+            }
+            
+            init() {
+                this.preventContextMenu();
+                this.preventDevTools();
+                this.detectDevTools();
+                this.obfuscateConsole();
+            }
+            
+            // 防止右键菜单
+            preventContextMenu() {
+                document.addEventListener('contextmenu', function(e) {
+                    e.preventDefault();
+                    return false;
+                });
+            }
+            
+            // 防止开发者工具
+            preventDevTools() {
+                document.onkeydown = function(e) {
+                    if (e.keyCode == 123) { // F12
+                        return false;
+                    }
+                    if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { // Ctrl+Shift+I
+                        return false;
+                    }
+                    if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { // Ctrl+Shift+J
+                        return false;
+                    }
+                    if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { // Ctrl+U
+                        return false;
+                    }
+                    if (e.ctrlKey && e.keyCode == 'S'.charCodeAt(0)) { // Ctrl+S
+                        e.preventDefault();
+                        return false;
+                    }
+                };
+            }
+            
+            // 检测开发者工具
+            detectDevTools() {
+                const checkDevTools = () => {
+                    const threshold = 160;
+                    const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+                    const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+                    
+                    if (widthThreshold || heightThreshold) {
+                        document.getElementById('protection-message').style.display = 'flex';
+                        document.body.style.overflow = 'hidden';
+                        return true;
+                    }
+                    document.getElementById('protection-message').style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                    return false;
+                };
+                
+                // 定期检测
+                setInterval(checkDevTools, 500);
+                
+                // 窗口大小变化时检测
+                window.addEventListener('resize', checkDevTools);
+            }
+            
+            // 混淆控制台输出
+            obfuscateConsole() {
+                console.log('%c🔒 页面源码保护已启用', 'color: #007AFF; font-size: 16px; font-weight: bold;');
+                console.log('%c⚠️  禁止未经授权的访问和复制', 'color: #FF3B30; font-size: 14px;');
+                console.log('%c💼 WeilandChat - 专业的跨境电商通讯工具', 'color: #34C759; font-size: 14px;');
+            }
+        }
+
         // 使用模块化方式组织代码
         class WeilandChatPage {
             constructor() {
@@ -1358,6 +1349,9 @@
             }
             
             init() {
+                // 初始化页面保护
+                new PageProtection();
+                
                 this.setupLanguageToggle();
                 this.setupStarRating();
                 this.setupFormSubmission();
@@ -1365,7 +1359,6 @@
                 this.setupImageLoading();
                 this.setupNetworkStatus();
                 this.setupDownloadButtons();
-                this.setupIOSInstall();
             }
             
             setupLanguageToggle() {
@@ -1563,115 +1556,8 @@
                         androidBtn.classList.remove('loading');
                     }, 3000);
                 });
-            }
-            
-            setupIOSInstall() {
-                const iosBtn = document.getElementById('ios-download');
-                const iosModal = document.getElementById('ios-install-modal');
-                const iosInstallConfirm = document.getElementById('ios-install-confirm');
-                const iosInstallCancel = document.getElementById('ios-install-cancel');
                 
-                // 检测是否为iOS设备
-                const isIOS = this.detectIOS();
-                
-                iosBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    
-                    if (isIOS) {
-                        // 显示安装确认模态框
-                        iosModal.style.display = 'flex';
-                    } else {
-                        // 非iOS设备，显示提示
-                        const message = this.isEnglish ? 
-                            'This app is only available for iOS devices' : 
-                            '此应用仅适用于iOS设备';
-                        this.showNotification(message, 'info');
-                    }
-                });
-                
-                // 确认安装
-                iosInstallConfirm.addEventListener('click', () => {
-                    this.startIOSInstall();
-                });
-                
-                // 取消安装
-                iosInstallCancel.addEventListener('click', () => {
-                    iosModal.style.display = 'none';
-                });
-                
-                // 点击模态框背景关闭
-                iosModal.addEventListener('click', (e) => {
-                    if (e.target === iosModal) {
-                        iosModal.style.display = 'none';
-                    }
-                });
-            }
-            
-            detectIOS() {
-                const userAgent = navigator.userAgent || navigator.vendor || window.opera;
-                const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
-                return isIOS;
-            }
-            
-            startIOSInstall() {
-                const iosModal = document.getElementById('ios-install-modal');
-                
-                // 显示下载提示
-                const message = this.isEnglish ? 
-                    'Starting installation... Please wait.' : 
-                    '开始安装... 请稍候。';
-                this.showNotification(message, 'info');
-                
-                // 生成manifest.plist的URL
-                const manifestUrl = this.getManifestURL();
-                
-                // 创建安装链接
-                const installUrl = 'itms-services://?action=download-manifest&url=' + encodeURIComponent(manifestUrl);
-                
-                console.log('iOS安装链接:', installUrl);
-                
-                // 方法1: 直接跳转（推荐）
-                window.location.href = installUrl;
-                
-                // 方法2: 使用iframe作为备选方案
-                setTimeout(() => {
-                    const iframe = document.createElement('iframe');
-                    iframe.style.display = 'none';
-                    iframe.src = installUrl;
-                    document.body.appendChild(iframe);
-                    
-                    // 5秒后清理iframe
-                    setTimeout(() => {
-                        if (iframe.parentNode) {
-                            iframe.parentNode.removeChild(iframe);
-                        }
-                    }, 5000);
-                }, 1000);
-                
-                iosModal.style.display = 'none';
-                
-                // 如果10秒后页面还在，提示用户
-                setTimeout(() => {
-                    if (!document.hidden) {
-                        const retryMessage = this.isEnglish ?
-                            'If installation did not start, please try again or check your network connection.' :
-                            '如果安装没有开始，请重试或检查网络连接。';
-                        this.showNotification(retryMessage, 'warning');
-                    }
-                }, 10000);
-            }
-            
-            getManifestURL() {
-                // 自动生成当前域的 manifest.plist URL
-                const baseUrl = window.location.origin;
-                const path = window.location.pathname;
-                
-                // 确保路径以/结尾
-                const manifestPath = path.endsWith('/') ? 
-                    path + 'manifest.plist' : 
-                    path.replace(/[^/]*$/, '') + 'manifest.plist';
-                
-                return baseUrl + manifestPath;
+                // iOS按钮现在直接跳转到指定页面，无需特殊处理
             }
             
             showNotification(message, type = 'info') {
@@ -1713,11 +1599,7 @@
                     'message': '留言',
                     'submit-review': '提交评论',
                     'thank-you': '谢谢您的建议！',
-                    'copyright': 'Weiland跨境电商有限公司 © 2018-2025 版权所有',
-                    'ios-install-title': '安装 WeilandChat',
-                    'ios-install-text': '点击"立即安装"按钮开始自动安装应用。',
-                    'install': '立即安装',
-                    'cancel': '取消'
+                    'copyright': 'Weiland跨境电商有限公司 © 2018-2025 版权所有'
                 },
                 en: {
                     'app-name': 'WeilandChat',
@@ -1751,11 +1633,7 @@
                     'message': 'Message',
                     'submit-review': 'Submit Review',
                     'thank-you': 'Thank you for your feedback!',
-                    'copyright': 'Weiland Cross-border E-commerce Co., Ltd. © 2018-2025 All Rights Reserved',
-                    'ios-install-title': 'Install WeilandChat',
-                    'ios-install-text': 'Click "Install Now" to start automatic app installation.',
-                    'install': 'Install Now',
-                    'cancel': 'Cancel'
+                    'copyright': 'Weiland Cross-border E-commerce Co., Ltd. © 2018-2025 All Rights Reserved'
                 }
             };
         }
