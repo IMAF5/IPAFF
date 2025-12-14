@@ -1286,8 +1286,18 @@
                 });
             }
             
-            // 防止开发者工具
+            // 防止开发者工具 - 修复：移动设备豁免
             preventDevTools() {
+                // 检测是否为移动设备
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                // 如果是移动设备，不阻止任何按键
+                if (isMobile) {
+                    console.log('移动设备访问，已禁用开发者工具按键拦截');
+                    return;
+                }
+                
+                // 以下仅针对桌面设备
                 document.onkeydown = function(e) {
                     if (e.keyCode == 123) { // F12
                         return false;
@@ -1308,8 +1318,23 @@
                 };
             }
             
-            // 检测开发者工具
+            // 检测开发者工具 - 修复：手机误触发问题
             detectDevTools() {
+                // 检测是否为移动设备
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                
+                // 如果是移动设备，使用更宽松的检测逻辑或完全跳过
+                if (isMobile) {
+                    console.log('移动设备访问，使用宽松的开发者工具检测');
+                    this.setupMobileDetection();
+                } else {
+                    console.log('桌面设备访问，使用严格的开发者工具检测');
+                    this.setupDesktopDetection();
+                }
+            }
+            
+            // 桌面设备检测（原有逻辑，但优化了）
+            setupDesktopDetection() {
                 const checkDevTools = () => {
                     const threshold = 160;
                     const widthThreshold = window.outerWidth - window.innerWidth > threshold;
@@ -1325,11 +1350,57 @@
                     return false;
                 };
                 
-                // 定期检测
-                setInterval(checkDevTools, 500);
+                // 首次检测
+                checkDevTools();
+                
+                // 定期检测（桌面设备保持检测）
+                setInterval(checkDevTools, 1000); // 从500ms改为1000ms，减少性能影响
                 
                 // 窗口大小变化时检测
                 window.addEventListener('resize', checkDevTools);
+            }
+            
+            // 移动设备检测（宽松逻辑）
+            setupMobileDetection() {
+                const checkDevTools = () => {
+                    // 移动设备使用更大的阈值（300px）
+                    const threshold = 300;
+                    const widthDiff = Math.abs(window.outerWidth - window.innerWidth);
+                    const heightDiff = Math.abs(window.outerHeight - window.innerHeight);
+                    
+                    // 调试信息（可选）
+                    // console.log(`移动设备检测 - 宽度差: ${widthDiff}, 高度差: ${heightDiff}, 阈值: ${threshold}`);
+                    
+                    // 只有在差值非常大（>300px）时才判定为开发者工具
+                    // 这通常是手机连接到电脑进行远程调试的情况
+                    if (widthDiff > threshold || heightDiff > threshold) {
+                        // 进一步确认：检查是否是常见的开发者工具宽度
+                        const isLikelyDevTools = widthDiff >= 300 || heightDiff >= 300;
+                        
+                        if (isLikelyDevTools) {
+                            document.getElementById('protection-message').style.display = 'flex';
+                            document.body.style.overflow = 'hidden';
+                            return true;
+                        }
+                    }
+                    
+                    document.getElementById('protection-message').style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                    return false;
+                };
+                
+                // 首次检测
+                checkDevTools();
+                
+                // 移动设备上，只检测一次 + 防抖的resize检测
+                let resizeTimer;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(checkDevTools, 1000); // 1秒防抖
+                });
+                
+                // 可选：完全禁用移动设备上的定期检测
+                // setInterval(checkDevTools, 2000); // 如果需要检测，使用更长的间隔
             }
             
             // 混淆控制台输出
@@ -1655,4 +1726,3 @@
     </script>
 </body>
 </html>
-
